@@ -37,6 +37,7 @@ public:
     void setFloat(const std::string &name, float value) const;
 //    void setMat4(const std::string &name, Matrix4f matrix) const;
     void setVec2(const std::string &name, Vector2f vector) const;
+    void setVec3(const std::string &name, Vector3f vector) const;
 
 //    virtual void updateUniforms(Transform &transform, const Material &material, RenderingEngine* renderingEngine);
     unsigned int getProgram() const;

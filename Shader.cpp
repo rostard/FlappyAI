@@ -178,6 +178,9 @@ void Shader::setVec2(const std::string &name, Vector2f vector) const {
     glUniform2f(glGetUniformLocation(program, name.c_str()), vector.getX(), vector.getY());
 }
 
+void Shader::setVec3(const std::string &name, Vector3f vector) const {
+    glUniform3f(glGetUniformLocation(program, name.c_str()), vector.getX(), vector.getY(), vector.getZ());
+}
 
 //void Shader::setUniformBaseLight(const uniformStruct &uniform, const BaseLight &light){
 //    std::string lastName = uniform.name.substr(uniform.name.find_last_of('.')+1);
@@ -264,3 +267,4 @@ unsigned int Shader::getProgram() const {
 void Shader::setProgram(unsigned int program) {
     Shader::program = program;
 }
+

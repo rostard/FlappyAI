@@ -10,8 +10,15 @@
 #include "Input.h"
 #include "utility/Log.h"
 #include "NeuralNetwork.h"
+#include "Font.h"
 
+static const int WindowWidth = 800;
+static const int WindowHeight = 600;
 float obstacleDistance = 13;
+
+int generation = 0;
+int best_score = 0;
+
 
 int num_of_birds = 50;
 Texture* pipeTexture;
@@ -24,7 +31,7 @@ std::vector<NeuralNetwork> evolve(std::vector<NeuralNetwork>& networks){
     int maxfiti = 0;
     for(int i =0 ;i<num_of_birds; i++){
         fitnesses[i] = networks[i].getFitness() * networks[i].getFitness() ;
-
+        if(networks[i].getFitness() > best_score) best_score = networks[i].getFitness();
         if(fitnesses[i] > maxfit){
             maxfit = fitnesses[i];
             maxfiti = i;
@@ -56,6 +63,7 @@ std::vector<NeuralNetwork> evolve(std::vector<NeuralNetwork>& networks){
 }
 
 void initGame(std::list<Obstacle*>& obstacles, Bird** birds){
+    generation++;
     for(int i = 0; i<num_of_birds; i++){
         birds[i]->reset();
     }
@@ -88,11 +96,19 @@ void checkObstacles(std::list<Obstacle*>& obstacles, Bird& bird){
 int main() {
     srand(static_cast<unsigned int>(time(nullptr)));
     Window::initGLFW();
-    Window::createWindow(800, 600, "FlappyAI");
+    Window::createWindow(WindowWidth, WindowHeight, "FlappyAI");
+
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glClearColor(1.0, 0.0, 0.0, 1.0);
 
+//---------------------------------
+    Font font("fonts/arial.ttf");
+    Shader* fontShader = ResourceManager::loadShader("font_shader", "font.vs", "font.fs");
+    fontShader->bind();
+    fontShader->setVec2("WindowSize", {WindowWidth, WindowHeight});
+
+//---------------------------------
     Sprite::initBuffers();
 
     Shader* spriteShader = ResourceManager::loadShader("sprite_shader", "sprite_shader.vs", "sprite_shader.fs");
@@ -189,6 +205,10 @@ int main() {
         for(auto i : obstacles){
             i->render(spriteShader);
         }
+
+
+           font.RenderText(fontShader, "Generation: " + std::to_string(generation), 20, 550, 0.5, Vector3f(1, 1, 1));
+           font.RenderText(fontShader, "The best score: " + std::to_string(best_score), 20, 510, 0.5, Vector3f(1, 1, 1));
 
         Window::render();
         Input::update();

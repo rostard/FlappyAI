@@ -40,6 +40,7 @@ void Sprite::render(Shader* shader) {
     shader->setInt("image", 0);
     shader->setVec2("size", size);
     shader->setVec2("position", position);
+    glBindVertexArray(vao);
     glDrawArrays(GL_TRIANGLES, 0, 6);
 }
 
