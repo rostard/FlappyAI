@@ -58,3 +58,8 @@ void Obstacle::setPassed(bool passed) {
 float Obstacle::getWidth() const {
     return topPipe->getSize().getX();
 }
+
+Obstacle::~Obstacle() {
+    delete topPipe;
+    delete bottomPipe;
+}

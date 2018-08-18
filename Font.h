@@ -13,16 +13,18 @@
 #include "Shader.h"
 
 struct Character {
-    GLuint     TextureID;  // ID handle of the glyph texture
-    Vector2f Size;       // Size of glyph
-    Vector2f Bearing;    // Offset from baseline to left/top of glyph
-    GLuint     Advance;    // Offset to advance to next glyph
+    GLuint     textureID;  // ID handle of the glyph texture
+    Vector2f size;       // size of glyph
+    Vector2f bearing;    // Offset from baseline to left/top of glyph
+    GLuint     advance;    // Offset to advance to next glyph
 };
 
 
 class Font {
 public:
-    Font(const std::string& fontPath);
+    Font(const std::string& fontPath, unsigned int fontSize = 48);
+
+    virtual ~Font();
 
     void RenderText(Shader* s, std::string text, GLfloat x, GLfloat y, GLfloat scale, Vector3f color);
 private:

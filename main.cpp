@@ -20,7 +20,8 @@ int generation = 0;
 int best_score = 0;
 
 
-int num_of_birds = 50;
+int num_of_birds = 100;
+
 Texture* pipeTexture;
 std::vector<NeuralNetwork> evolve(std::vector<NeuralNetwork>& networks){
     std::vector<NeuralNetwork> result;
@@ -79,6 +80,7 @@ void initGame(std::list<Obstacle*>& obstacles, Bird** birds){
 
 void checkObstacles(std::list<Obstacle*>& obstacles, Bird& bird){
     while(!obstacles.empty() && obstacles.front()->posLessThanX(-2)){
+        delete obstacles.front();
         obstacles.pop_front();
         obstacles.emplace_back(new Obstacle(pipeTexture, obstacles.back()->getX() + obstacleDistance));
     }
@@ -135,7 +137,7 @@ int main() {
         nns.emplace_back(3, 3, 1);
     }
 
-    float offset = 0;
+    float backgroundOffset = 0;
 
     float speed = 0;
 
@@ -152,7 +154,7 @@ int main() {
 
 
         for(int i = 0; i < speed; i++){
-            offset += 0.0001;
+            backgroundOffset += 0.0001;
 
             for(auto i : obstacles){
                 i->move(0.2);
@@ -166,19 +168,11 @@ int main() {
                     atLeastOne = true;
                     checkObstacles(obstacles, *birds[i]);
 
-//                    std::vector<float> input = {birds[i]->getXDistance(), birds[i]->getYDistance()};
                     std::vector<float> input = {birds[i]->getXDistance(), birds[i]->getYDistance(), birds[i]->getVelocity()};
                     guesses[i] = nns[i].Guess(input)[0] > 0.5;
-                    //nns[i]->Guess()
                     if (guesses[i]) birds[i]->jump();
-//                    if(Input::isKeyDown(GLFW_KEY_SPACE)){
-//                        birds[0]->jump();
-//                    }
                     birds[i]->move();
-                    if(birds[i]->dead = birds[i]->shouldDie(obstacles)){
-                        //finish(birds[i]->getXDistance(), birds[i]->getYDistance(), glfwGetTime() - startTime);
-                    }
-
+                    birds[i]->dead = birds[i]->shouldDie(obstacles);
 
                 }
             }
@@ -191,7 +185,7 @@ int main() {
                 }
             }
             parallaxShader->bind();
-            parallaxShader->setFloat("offset", offset);
+            parallaxShader->setFloat("backgroundOffset", backgroundOffset);
         }
 
 
@@ -206,14 +200,21 @@ int main() {
             i->render(spriteShader);
         }
 
-
-           font.RenderText(fontShader, "Generation: " + std::to_string(generation), 20, 550, 0.5, Vector3f(1, 1, 1));
-           font.RenderText(fontShader, "The best score: " + std::to_string(best_score), 20, 510, 0.5, Vector3f(1, 1, 1));
+        font.RenderText(fontShader, "Generation: " + std::to_string(generation), 20, 550, 0.5, Vector3f(1, 1, 1));
+        font.RenderText(fontShader, "The best score: " + std::to_string(best_score), 20, 510, 0.5, Vector3f(1, 1, 1));
 
         Window::render();
         Input::update();
 
         glfwPollEvents();
+    }
+
+    for(int i = 0; i<num_of_birds; i++){
+        delete birds[i];
+    }
+
+    for(auto i : obstacles){
+        delete i;
     }
 
     Window::dispose();

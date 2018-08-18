@@ -72,3 +72,7 @@ float Bird::getVelocity() const {
 float Bird::getWidth() const {
     return sprite->getSize().getX();
 }
+
+Bird::~Bird() {
+    delete sprite;
+}

@@ -16,6 +16,8 @@ class Bird {
 public:
     Bird(Texture* texture);
 
+    virtual ~Bird();
+
     bool shouldDie(std::list<Obstacle *>);
 
     void move();

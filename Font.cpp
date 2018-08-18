@@ -8,7 +8,7 @@
 #include FT_FREETYPE_H
 #include "utility/Log.h"
 
-Font::Font(const std::string &fontPath) {
+Font::Font(const std::string &fontPath, unsigned int fontSize) {
     glGenVertexArrays(1, &VAO);
     glGenBuffers(1, &VBO);
     glBindVertexArray(VAO);
@@ -27,7 +27,7 @@ Font::Font(const std::string &fontPath) {
     if (FT_New_Face(ft, fontPath.c_str(), 0, &face))
         Log::Message("FREETYPE: Failed to load font", LOG_ERROR);
 
-    FT_Set_Pixel_Sizes(face, 0, 48);
+    FT_Set_Pixel_Sizes(face, 0, fontSize);
 
 
     glPixelStorei(GL_UNPACK_ALIGNMENT, 1); // Disable byte-alignment restriction
@@ -92,11 +92,11 @@ void Font::RenderText(Shader* s, std::string text, GLfloat x, GLfloat y, GLfloat
     {
         Character ch = Characters[*c];
 
-        GLfloat xpos = x + ch.Bearing.getX() * scale;
-        GLfloat ypos = y - (ch.Size.getY() - ch.Bearing.getY()) * scale;
+        GLfloat xpos = x + ch.bearing.getX() * scale;
+        GLfloat ypos = y - (ch.size.getY() - ch.bearing.getY()) * scale;
 
-        GLfloat w = ch.Size.getX() * scale;
-        GLfloat h = ch.Size.getY() * scale;
+        GLfloat w = ch.size.getX() * scale;
+        GLfloat h = ch.size.getY() * scale;
         // Update VBO for each character
         GLfloat vertices[6][4] = {
                 { xpos,     ypos + h,   0.0, 0.0 },
@@ -108,7 +108,7 @@ void Font::RenderText(Shader* s, std::string text, GLfloat x, GLfloat y, GLfloat
                 { xpos + w, ypos + h,   1.0, 0.0 }
         };
         // Render glyph texture over quad
-        glBindTexture(GL_TEXTURE_2D, ch.TextureID);
+        glBindTexture(GL_TEXTURE_2D, ch.textureID);
         // Update content of VBO memory
         glBindBuffer(GL_ARRAY_BUFFER, VBO);
         glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vertices), vertices);
@@ -116,8 +116,16 @@ void Font::RenderText(Shader* s, std::string text, GLfloat x, GLfloat y, GLfloat
         // Render quad
         glDrawArrays(GL_TRIANGLES, 0, 6);
         // Now advance cursors for next glyph (note that advance is number of 1/64 pixels)
-        x += (ch.Advance >> 6) * scale; // Bitshift by 6 to get value in pixels (2^6 = 64)
+        x += (ch.advance >> 6) * scale; // Bitshift by 6 to get value in pixels (2^6 = 64)
     }
     glBindVertexArray(0);
     glBindTexture(GL_TEXTURE_2D, 0);
+}
+
+Font::~Font() {
+    for(auto pair : Characters){
+        glDeleteTextures(1, &pair.second.textureID);
+    }
+    glDeleteVertexArrays(1, &VAO);
+    glDeleteBuffers(1, &VBO);
 }

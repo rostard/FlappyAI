@@ -15,6 +15,8 @@ public:
     Obstacle(Texture* texture, float xPos, float height);
     Obstacle(Texture* texture, float xPos);
 
+    virtual ~Obstacle();
+
     void move(float amt);
 
     void render(Shader* shader);
@@ -38,7 +40,7 @@ private:
     const float GAP = 3.5;
     Sprite* topPipe;
     Sprite* bottomPipe;
-    bool passed;
+    bool passed = false;
 
 };
 
