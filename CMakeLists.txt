@@ -1,10 +1,19 @@
 cmake_minimum_required(VERSION 3.9)
+
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
+
+
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/modules")
+
 project(FlappyAI)
 
-set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
-set(SOURCE_FILES main.cpp Window.h Window.cpp utility/Log.cpp utility/Log.h Vector2f.cpp Vector2f.h ResourceManager.cpp ResourceManager.h Shader.cpp Shader.h ShaderLoader.h ShaderLoader.cpp Texture.h Texture.cpp TextureLoader.h TextureLoader.cpp utility/SID.h dependencies/stb_image.h dependencies/stb_image.cpp Sprite.cpp Sprite.h Obstacle.cpp Obstacle.h Bird.cpp Bird.h Input.h Input.cpp NeuralNetwork.cpp NeuralNetwork.h Font.cpp Font.h)
+add_subdirectory(src)
 
-add_executable(${PROJECT_NAME} ${SOURCE_FILES})
-
-target_link_libraries(${PROJECT_NAME} -L/usr/local/lib -I/usr/include/libpng16 -I/usr/include/freetype2 -lGLEW -lGL -lfreetype -lz  -lm  -lglfw -lrt -ldl -lXrandr -lXinerama -lXxf86vm -lXext -lXcursor -lXrender -lXfixes -lX11 -lpthread -lxcb -lXau -lassimp -lstdc++ )
+#file(COPY "src/launcher/src/dependencies/bin/Win32/glfw3.dll" DESTINATION "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}")
+#file(COPY "src/launcher/src/dependencies/bin/Win32/glew32.dll" DESTINATION "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}")
